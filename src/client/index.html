@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="End-to-End Frequent Flyer Portal"
+  >
+
+  <title>Frequent Flyer Portal</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+</head>
+
+<body>
+
+  <main class="app-container">
+
+    <!-- HEADER -->
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">LOYALTY MANAGEMENT</p>
+
+        <h1>
+          Frequent Flyer Portal
+        </h1>
+
+        <p class="header-description">
+          Manage frequent flyer members,
+          membership tiers, and loyalty miles.
+        </p>
+      </div>
+
+      <div
+        class="connection-status"
+        id="connectionStatus"
+        aria-live="polite"
+      >
+        <span
+          class="status-dot"
+          aria-hidden="true"
+        ></span>
+
+        <span id="connectionText">
+          Checking connection...
+        </span>
+      </div>
+    </header>
+
+    <!-- ACTION BAR -->
+    <section
+      class="action-bar"
+      aria-label="Member actions"
+    >
+
+      <div class="search-wrapper">
+
+        <label for="searchInput">
+          Search members
+        </label>
+
+        <div class="search-box">
+
+          <input
+            type="search"
+            id="searchInput"
+            placeholder="Search by name, email or member ID"
+            autocomplete="off"
+          >
+
+          <button
+            type="button"
+            id="searchButton"
+          >
+            Search
+          </button>
+
+        </div>
+
+      </div>
+
+      <button
+        type="button"
+        class="primary-button"
+        id="addMemberButton"
+      >
+        + Add Member
+      </button>
+
+    </section>
+
+
+    <!-- MESSAGE AREA -->
+    <div
+      id="message"
+      class="message"
+      role="status"
+      aria-live="polite"
+      hidden
+    ></div>
+
+    <!-- LOADING -->
+    <div
+      id="loading"
+      class="loading"
+      aria-live="polite"
+      hidden
+    >
+      <div
+        class="spinner"
+        aria-hidden="true"
+      ></div>
+
+      <span>
+        Loading members...
+      </span>
+    </div>
+
+    <!-- MEMBERS SECTION -->
+    <section
+      class="members-section"
+      aria-labelledby="membersHeading"
+    >
+
+      <div class="section-header">
+
+        <div>
+          <p class="section-label">
+            MEMBER DIRECTORY
+          </p>
+
+          <h2 id="membersHeading">
+            Frequent Flyers
+          </h2>
+        </div>
+
+        <span
+          id="memberCount"
+          class="member-count"
+        >
+          0 members
+        </span>
+
+      </div>
+
+      <!-- EMPTY STATE -->
+      <div
+        id="emptyState"
+        class="empty-state"
+        hidden
+      >
+        <div
+          class="empty-icon"
+          aria-hidden="true"
+        >
+          ✈
+        </div>
+
+        <h3>
+          No data found
+        </h3>
+
+        <p>
+          No frequent flyer members match
+          your search.
+        </p>
+      </div>
+
+      <!-- TABLE -->
+      <div
+        class="table-wrapper"
+        id="tableWrapper"
+      >
+
+        <table>
+
+          <caption class="sr-only">
+            Frequent flyer member directory
+          </caption>
+
+          <thead>
+            <tr>
+              <th scope="col">
+                Member
+              </th>
+
+              <th scope="col">
+                Contact
+              </th>
+
+              <th scope="col">
+                Tier
+              </th>
+
+              <th scope="col">
+                Miles
+              </th>
+
+              <th scope="col">
+                Status
+              </th>
+
+              <th scope="col">
+                Actions
+              </th>
+            </tr>
+          </thead>
+
+          <tbody id="membersTableBody">
+            <!-- Members rendered by JavaScript -->
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- MEMBER MODAL -->
+  <div
+    id="memberModal"
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modalTitle"
+    hidden
+  >
+
+    <div class="modal-backdrop"></div>
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+
+        <div>
+          <p class="section-label">
+            MEMBER MANAGEMENT
+          </p>
+
+          <h2 id="modalTitle">
+            Add Frequent Flyer
+          </h2>
+        </div>
+
+        <button
+          type="button"
+          id="closeModalButton"
+          class="icon-button"
+          aria-label="Close member form"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <form id="memberForm" novalidate>
+
+        <input
+          type="hidden"
+          id="memberId"
+        >
+
+
+        <!-- FIRST NAME -->
+        <div class="form-group">
+
+          <label for="firstName">
+            First name
+          </label>
+
+          <input
+            type="text"
+            id="firstName"
+            name="firstName"
+            maxlength="50"
+            autocomplete="given-name"
+            required
+            aria-describedby="firstNameError"
+          >
+
+          <span
+            class="field-error"
+            id="firstNameError"
+            aria-live="polite"
+          ></span>
+
+        </div>
+
+
+        <!-- LAST NAME -->
+        <div class="form-group">
+
+          <label for="lastName">
+            Last name
+          </label>
+
+          <input
+            type="text"
+            id="lastName"
+            name="lastName"
+            maxlength="50"
+            autocomplete="family-name"
+            required
+            aria-describedby="lastNameError"
+          >
+
+          <span
+            class="field-error"
+            id="lastNameError"
+            aria-live="polite"
+          ></span>
+
+        </div>
+
+
+        <!-- EMAIL -->
+        <div class="form-group">
+
+          <label for="email">
+            Email
+          </label>
+
+          <input
+            type="email"
+            id="email"
+            name="email"
+            autocomplete="email"
+            required
+            aria-describedby="emailError"
+          >
+
+          <span
+            class="field-error"
+            id="emailError"
+            aria-live="polite"
+          ></span>
+
+        </div>
+
+
+        <!-- PHONE -->
+        <div class="form-group">
+
+          <label for="phone">
+            Phone
+          </label>
+
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            autocomplete="tel"
+            required
+            aria-describedby="phoneError"
+          >
+
+          <span
+            class="field-error"
+            id="phoneError"
+            aria-live="polite"
+          ></span>
+
+        </div>
+
+
+        <!-- TIER -->
+        <div class="form-group">
+
+          <label for="membershipTier">
+            Membership tier
+          </label>
+
+          <select
+            id="membershipTier"
+            name="membershipTier"
+          >
+            <option value="BASIC">
+              Basic
+            </option>
+
+            <option value="SILVER">
+              Silver
+            </option>
+
+            <option value="GOLD">
+              Gold
+            </option>
+
+            <option value="PLATINUM">
+              Platinum
+            </option>
+          </select>
+
+        </div>
+
+
+        <!-- MILES -->
+        <div class="form-group">
+
+          <label for="miles">
+            Loyalty miles
+          </label>
+
+          <input
+            type="number"
+            id="miles"
+            name="miles"
+            min="0"
+            step="1"
+            value="0"
+            aria-describedby="milesError"
+          >
+
+          <span
+            class="field-error"
+            id="milesError"
+            aria-live="polite"
+          ></span>
+
+        </div>
+
+
+        <!-- FORM ACTIONS -->
+        <div class="form-actions">
+
+          <button
+            type="button"
+            id="cancelButton"
+            class="secondary-button"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            id="saveMemberButton"
+            class="primary-button"
+          >
+            Save Member
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <script src="app.js"></script>
+
+</body>
+</html>
